@@ -29,15 +29,18 @@ if(mysqli_num_rows($result) == 0)
 }
 if(isset($_POST['shop']))
 {
-    if(isset($_SESSION['loggedinuser']) == true)
-      {
-    header("location: checkout.php");
-      }
+    $sql = "SELECT * FROM cartdetail";
+    $result = mysqli_query($conn, $sql);
+    if(mysqli_num_rows($result) == 0) 
+    {
+        $emptycart = true;
+    }
+    else
+    {
 
-      else{
-         $login = true;
+        header("location: checkout.php");
+    }
       
-      }
 }
 ?>
 <!DOCTYPE html>
@@ -64,16 +67,13 @@ if(isset($_POST['shop']))
 
     ?>
     <?php
-        if($login)
-        {
-            echo "
-            <div class='alert alert-danger'>
-            <strong>Unsuccessfull!</strong> For Contine Shooping. Login First.
-       </div>   
-            
-            ";
-        }
-    ?>  
+    if(isset($emptycart))
+    {
+        echo " <div class='alert alert-danger'>
+        <strong>Unsuccessfull</strong> Please Fill The Cart First .
+   </div>";
+    }
+    ?>
         
     <div id="cover" class="container-fluid">
         <div id="divCover" class="container border">
@@ -165,8 +165,10 @@ if(isset($_POST['shop']))
                 <div class="col-md-12  cart-body-footer">
                     <input type="hidden" id="quentityarray" name="quentityarray" value="">
                     <input type="hidden" id="idarray" name="idarray" value="">
+                    <form action="" method="post">
                     <button type="submit" name="shop"
                         class="cart-body-footer-shop">Continue Shopping</button>
+                        </form>
                     <button type="sumbit" name="submit" onclick="update()" class="cart-body-footer-update"><i
                             class="fa fa-spinner"></i> update Cart</button>
                 </div>

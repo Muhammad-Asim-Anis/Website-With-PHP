@@ -1,8 +1,9 @@
 <?php
 include 'connect.php';
+
 if(isset($_POST['logout']))
 {  
-   
+    date_default_timezone_set("Asia/Karachi");
     if(isset($_SESSION['email']) && isset($_SESSION['name']) && isset($_SESSION['Account Type']))
     {
         $email = $_SESSION['email'];
@@ -19,6 +20,13 @@ if(isset($_POST['logout']))
         header("location: signup.php"); 
         exit; 
     }
+}
+$sql = "SELECT COUNT(*) AS `cartquentity` FROM `cartdetail`";
+$result = mysqli_query($conn,$sql);
+
+foreach($result as $value)
+{
+    $cart = $value['cartquentity'];
 }
 ?>
 <style>
@@ -58,7 +66,25 @@ button
                     <form action="" method="post">
                         <div><button type="submit" name="logout"><img src="images/sign-out.png"  alt="" srcset=""></button></div>
                     </form>
-                    <div><img src="images/cart.png" alt="" srcset="" onclick="window.location='cart.php'"></div>
+                    <div><img src="images/cart.png" alt="" srcset="" onclick="window.location='cart.php'">
+                    <span onclick="window.location.href='cart.php'" id="quentity" class="cart-quentity">
+                        <?php
+                        if($cart > 0) 
+                        {
+                        echo $cart; 
+                        }
+                        else
+                        {
+                            echo "
+                            <script>
+                               document.getElementById('quentity').style.display = 'none';
+                            </script>
+                            ";
+                        }
+                        ?>
+                    
+                    </span>   
+                     </div>
                 </div>
             </div>
         </div>

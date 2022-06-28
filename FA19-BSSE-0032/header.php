@@ -1,3 +1,13 @@
+<?php 
+include 'connect.php';
+$sql = "SELECT COUNT(*) AS `cartquentity` FROM `cartdetail`";
+$result = mysqli_query($conn,$sql);
+
+foreach($result as $value)
+{
+    $cart = $value['cartquentity'];
+}
+?>
 <div class="container bg-dark ">
         <div class="row menu">
 
@@ -24,7 +34,25 @@
             <div id="nav3" class="col-md-2">
                 <div class="nav3">
                     <div><img src="images/user.png" alt="" srcset="" onclick="window.location='signup.php'"></div>
-                    <div><img src="images/cart.png" alt="" srcset="" onclick="window.location='cart.php'"></div>
+                    <div><img src="images/cart.png" alt="" srcset="" onclick="window.location='cart.php'">
+                    <span id="quentity" class="cart-quentity">
+                        <?php
+                        if($cart > 0) 
+                        {
+                        echo $cart; 
+                        }
+                        else
+                        {
+                            echo "
+                            <script>
+                               document.getElementById('quentity').style.display = 'none';
+                            </script>
+                            ";
+                        }
+                        ?>
+                    
+                    </span>
+                </div>
                 </div>
             </div>
         </div>

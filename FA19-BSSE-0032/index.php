@@ -1,3 +1,6 @@
+<?php
+include 'connect.php'; 
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -83,25 +86,23 @@
                         provident tempore itaque officia eveniet sunt. Lorem ipsum dolor sit amet.</p>
                 </div>
                 <div id="productBody">
-                    <div class="col-lg-3 col-md-6">
-                        <img src="images/jewellerychain3.png" height="365" alt="" srcset="">
-                        <h4>Your Heading Here!</h4>
-                        <h4>Your Heading Here!</h4>
+                    <?php
+                    $sql = "SELECT * FROM `productdetail` LIMIT 0,4";
+                    $result = mysqli_query($conn,$sql);
+
+                    foreach($result as $value)
+                    {
+                        echo "
+                        <div class='col-lg-3 col-md-6'>
+                        <img src='".$value['image']."' height='365' alt='' srcset=''>
+                        <h4>".$value['name']."</h4>
                     </div>
-                    <div class="col-lg-3 col-md-6">
-                        <img src="images/jewellerychain2.png" height="365" alt="" srcset="">
-                        <h4>Your Heading Here!</h4>
-                    </div>
-                    <div class="col-lg-3 col-md-6">
-                        <img src="images/jewellerychain1.png" height="365" alt="" srcset="">
-                        <h4>Your Heading Here!</h4>
-                    </div>
-                    <div class="col-lg-3 col-md-6">
-                        <img src="images/jewellerychain4.png" height="365" alt="" srcset="">
-                        <h4>Your Heading Here!</h4>
-                    </div>
+                        ";
+                    }
+                    ?>
+                   
                     <div class="col-md-12">
-                        <button id="productBtn">View All</button>
+                        <button onclick="window.location.href='shopMenu.php'" id="productBtn">View All</button>
                     </div>
                 </div>
             </div>
@@ -119,6 +120,7 @@
                         provident tempore itaque officia eveniet sunt. Lorem ipsum dolor sit amet.</p>
                 </div>
                 <div id="CategoryBody">
+                   
                     <div class="col-lg-4 col-md-6">
                         <img src="images/ring1.png" alt="" srcset="">
 

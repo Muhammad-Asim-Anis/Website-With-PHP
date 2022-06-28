@@ -8,19 +8,19 @@ if(!isset($_SESSION['loggedinadmin']))
         $array = array();
         $arrayquentity = array();
         
-         $sql = "SELECT `name`  FROM `cartdetail` ORDER BY `quentity` DESC";
+         $sql = "SELECT `ProductName` FROM `purchaseitems` GROUP BY `ProductName`";
           $result = mysqli_query($conn,$sql);
           
           foreach($result as $value)
           {
-            $array[] = $value['name'];
+            $array[] = $value['ProductName'];
           }
-         $sqlquery ="SELECT `quentity` FROM `cartdetail` ORDER BY `quentity` desc";  
+         $sqlquery ="SELECT SUM(`ProductQuentity`) AS `Quentity` FROM `purchaseitems` GROUP BY `ProductName` ORDER BY `ProductQuentity`";  
          $result2 = mysqli_query($conn,$sqlquery);
           
          foreach($result2 as $value)
          {
-           $array2[] = $value['quentity'];
+           $array2[] = $value['Quentity'];
          }
 
 ?>
@@ -72,7 +72,7 @@ if(!isset($_SESSION['loggedinadmin']))
          </div>
          <div class="col-lg-2 col-sm-8 col-xs-12 col-md-4">
          <?php 
-             $sql = "SELECT SUM(`price` * `quentity`) as `Total` FROM `cartdetail` ";
+             $sql = "SELECT SUM(`Total`) as `Total` FROM `paymentdeatils` ";
              $result = mysqli_query($conn,$sql);
              foreach($result as $value)
              {
@@ -116,7 +116,7 @@ if(!isset($_SESSION['loggedinadmin']))
          </div>
          <div class="col-lg-2 col-sm-8 col-xs-12 col-md-4">
          <?php 
-             $sql = "SELECT count(*) as `Total Order` FROM `cartdetail` ";
+             $sql = "SELECT count(*) as `Total Order` FROM `paymentdeatils` ";
              $result = mysqli_query($conn,$sql);
              foreach($result as $value)
              {

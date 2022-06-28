@@ -119,24 +119,24 @@ if(isset($_POST['Submit']))
                 ?>
                 <div class="menubodysiderating">
                   
-                    <button class="fa fa-star starbutton " id="1" value="0"></button>
+                    <button class="fa fa-star starbutton " id="1" value="0" ></button>
                     <button class="fa fa-star starbutton " id="2" value="0"></button>
                     <button class="fa fa-star starbutton" id="3" value="0"></button>
                     <button class="fa fa-star starbutton" id="4" value="0"></button>
                     <button class="fa fa-star starbutton" id="5" value="0"></button>
                     
-               
-            </div>
-            <div class="menubodysideparagraph">
-                <p>
-                    <?php echo $description; ?>
-                </p>
-            </div>
-            <form action="" method="post">
-                <input type="hidden" name="image" value="<?php echo $image ?>">
-                <input type="hidden" name="price" value="<?php echo $price ?>">
-                <input type="hidden" name="name" value="<?php echo $name ?>">
-                <input id="rating" type="hidden" value="<?php echo $rating; ?>">
+                    
+                </div>
+                <div class="menubodysideparagraph">
+                    <p>
+                        <?php echo $description; ?>
+                    </p>
+                </div>
+                <form action="" method="post">
+                    <input type="hidden" name="image" value="<?php echo $image ?>">
+                    <input type="hidden" name="price" value="<?php echo $price ?>">
+                    <input type="hidden" name="name" value="<?php echo $name ?>">
+                    <input id="rating" type="hidden" value="<?php echo $rating; ?>">
                     <div class="menubodysidequentity">
                         <h4>Quantity</h4>
                         <button type="button" id="minus"><i class="fa fa-minus" aria-hidden="true"></i></button>
@@ -155,7 +155,7 @@ if(isset($_POST['Submit']))
                             </p>
                         </div>
                         <input id="rate" type="hidden" name="rating" value="">
-                        <button type="submit" name="Submit">Shop Now</button>
+                        <button type="submit" name="Submit" data-toggle="tooltip" data-placement="bottom" title="To confirm Rating click on This button">Shop Now</button>
                 </form>
             </div>
         </div>
@@ -248,7 +248,6 @@ if(isset($_POST['Submit']))
                             rate.setAttribute("value", "0");
                             console.log(count);
                         }
-                        
                         document.getElementById("rate").value = count;
                     } else {
                          count=0;
@@ -261,7 +260,6 @@ if(isset($_POST['Submit']))
                             console.log(count);
                         }
                         document.getElementById("rate").value = count;
-
                     }
 
                 })

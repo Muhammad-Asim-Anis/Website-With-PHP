@@ -1,5 +1,5 @@
 <?php
-if(isset($_POST['logout']))
+if(isset($_POST['adminlogout']))
 {
     
     unset($_SESSION['loggedinadmin']);  
@@ -43,7 +43,7 @@ button
             <div id="nav3" class="col-md-2">
                 <div class="nav3">
                     <form action="" method="post">
-                        <div><button type="submit" name="logout"><img src="images/sign-out.png"  alt="" srcset=""></button></div>
+                        <div><button type="submit" name="adminlogout"><img src="images/sign-out.png"  alt="" srcset=""></button></div>
                     </form>
                 </div>
             </div>

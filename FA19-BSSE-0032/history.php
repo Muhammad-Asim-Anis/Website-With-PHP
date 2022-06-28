@@ -12,13 +12,13 @@ if(!isset($_SESSION['loggedinadmin']))
 <html lang="en">
 
 <head>
-<?php include 'head.php'; ?>
+    <?php include 'head.php'; ?>
 
 </head>
 
 <body>
 
-<?php
+    <?php
     include 'Adminnavbar.php';
 ?>
 
@@ -29,40 +29,40 @@ if(!isset($_SESSION['loggedinadmin']))
         </div>
     </div>
     <div class="container">
-  <div class="table-responsive">          
-  <table class="table">
-    <thead>
-        <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Email</th>
-        <th>Status</th>
-        <th>Time</th>
-      </tr>
-      
-    </thead>
-    <tbody>
-      
-      <?php 
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Status</th>
+                        <th>Time</th>
+                    </tr>
+
+                </thead>
+                <tbody>
+
+                    <?php 
         $sql = "SELECT * FROM `sign_signout_history`";
         $result = mysqli_query($conn,$sql);
         foreach($result as $value)
         {
-            echo "<tr><td>".$value['AccountType']."</td>
+            echo "<tr>
             <td>".$value['Name']."</td>
             <td>".$value['Email']."</td>
             <td>".$value['Status']."</td>
             <td>".$value['Time']."</td></tr>"; 
         }
         ?>
-        
-      
-    </tbody>
-  </table>
-  </div>
-</div>
 
-    
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
     <?php
     include 'footer.php';
     ?>
@@ -73,7 +73,7 @@ if(!isset($_SESSION['loggedinadmin']))
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="js/bootstrap.min.js"></script>
     <script src="index.js"></script>
-   
+
 </body>
 
 </html>

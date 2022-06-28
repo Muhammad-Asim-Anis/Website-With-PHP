@@ -11,15 +11,16 @@ if(isset($_POST['submit']))
  
     $email =  $_POST['email'];
     $password = $_POST['password'];
-    $type = $_POST['AccountType'];
     $name = "";
-    if(!empty($email)  && !empty($password) && $type != "Account Type")
+    $type = "";
+    if(!empty($email)  && !empty($password))
     {
-        $sql = "SELECT `firstname` , `lastname`  FROM `userinfo` where `email`='".$email."' AND `password` = '".$password."' AND `AccountType` = '".$type."'";
+        $sql = "SELECT `firstname` , `lastname`,`AccountType`  FROM `userinfo` where `email`='".$email."' AND `password` = '".$password."' ";
         $result = mysqli_query($conn, $sql);
         foreach($result as $value)
         {
             $name = $value['firstname']." ".$value['lastname'];
+            $type = $value['AccountType'];
         }
         if (mysqli_num_rows($result) == 1) {
           
@@ -29,13 +30,14 @@ if(isset($_POST['submit']))
            $_SESSION['Account Type'] = $type;
            $sqlinsert = "INSERT INTO `sign_signout_history`(`AccountType`, `Email`, `Status`, `Name`, `Time`) VALUES ('".$type."','".$_SESSION['email']."','SIGN IN','".$name."','".date("h:i:a")."')";
            $result = mysqli_query($conn,$sqlinsert); 
+          
            header("location: index.php");
         }
         else{
             $checkaccount = true; 
         }
     }
-    else if(!empty($email) && !empty($password) && $type == "Account Type")
+    if(!empty($email) && !empty($password))
     {
         $sql = "SELECT * FROM `adminlogin` where `Admin_email`='".$email."' AND `Admin_password` = '".$password."' ";
         $result = mysqli_query($conn, $sql);
@@ -54,6 +56,8 @@ if(isset($_POST['submit']))
 }
 if(isset($_POST['registerd']))
 {
+    
+
    $type = $_POST['AccountType'];
    $email = $_POST['email'];
    $password = $_POST['password'];
@@ -66,15 +70,30 @@ if(isset($_POST['registerd']))
     
     if (mysqli_num_rows($result) == 0) {
 
-        if($chpassword == $password)
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, 'https://emailvalidation.abstractapi.com/v1/?api_key=d91d4090623a4a26bfad9766be96e7ae&email='.$email.'');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        $data = curl_exec($ch);
+        curl_close($ch);
+        $response = json_decode($data,true);
+
+        if($response['deliverability'] == "DELIVERABLE")
         {
-           if($check == 1)
+            if($chpassword == $password)
             {
+                if($check == 1)
+                {
                 $sql = "INSERT INTO `userinfo`(`AccountType`, `email`, `password`, `firstname`, `lastname`) VALUES ('".$type."','".$email."','".$password."','".$firstname."','".$lastname."')";
                 $result = mysqli_query($conn, $sql);
                 $verify = true;
-            }
+                }
 
+            }
+            
+        }
+        else{
+            $check_email = true;
         }
     }
     else
@@ -138,6 +157,12 @@ if(isset($_POST['registerd']))
 
     <?php
         }
+        else if(isset($check_email) == true)
+        {
+            echo " <div class='alert alert-danger'>
+            <strong>Unsuccessfull!</strong>Email is Inccorect Or didn't Exist!
+         </div>";
+        }
     ?>
     <div id="cover" class="container-fluid">
         <div id="divCover" class="container border">
@@ -150,20 +175,10 @@ if(isset($_POST['registerd']))
             <form action="" method="post">
                 <div class="login signup col-md-6 col-sm-12">
                     <h4 class="heading">Please Log in</h4>
-                    <div>
-
-                        <label>Pick</label>
-                        <select name="AccountType" id="cars">
-                                <option selected>Account Type</option>
-                                <option value="saab">Saab</option>
-                                <option value="opel">Opel</option>
-                                <option value="audi">Audi</option>
-                        </select>
-                    </div>
                     <input type="text" name="email" placeholder="Please enter Email">
-                    <input type="password" name="password" placeholder="Please enter Password">
+                    <input id="password" onmouseout="hide()" onmouseover="show()" type="password" name="password" placeholder="Please enter Password">
                     <button type="submit" name="submit">LOG IN</button>
-                    <a href="">Forgotten your password</a>
+                    <a href="forgetpassword.php">Forgotten your password</a>
                 </div>
             </form>
             <form action="" method="post">
@@ -172,7 +187,7 @@ if(isset($_POST['registerd']))
                     <h4 class="heading">Please Sign up</h4>
                     <div>
                         <label>Create</label>
-                        <select name="AccountType" id="cars">
+                        <select name="AccountType" id="cars" Required>
                             <option selected>Account Type</option>
                             <option value="saab">Saab</option>
                             <option value="opel">Opel</option>
@@ -188,7 +203,7 @@ if(isset($_POST['registerd']))
                     <div class="check">
                         <input id="checkbox" name="check" type="checkbox" value="0" Required>
                         <p>By Registering you agree to our</p>
-                        <a href="">Terms of Use</a>
+                        <a href="terms.php">Terms of Use</a>
                     </div>
                     <button type="submit" name="registerd">Create an Account </button>
 
@@ -209,6 +224,15 @@ if(isset($_POST['registerd']))
                 checkbox.value = 1;
             }
         })
+
+        function show()
+        {
+            document.getElementById("password").setAttribute("type","text");
+        }
+        function hide()
+        {
+            document.getElementById("password").setAttribute("type","password");
+        }
     </script>
 </body>
 

@@ -1,10 +1,20 @@
 <?php
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+require 'PHPMailer-master/src/Exception.php';
+require 'PHPMailer-master/src/PHPMailer.php';
+require 'PHPMailer-master/src/SMTP.php';
 include 'connect.php';
+header("Cache-Control: no cache");
+session_cache_limiter("private_no_expire");
+include 'connect.php';
+session_start();
 if(isset($_GET['GetId']))
 {
     $sql = "DELETE FROM `cartdetail` where `Id`='".$_GET['GetId']."' ";
     $result = mysqli_query($conn, $sql);
 }
+
 if(isset($_POST['Submit']))
 {
     $id = $_POST['idupdate'];
@@ -14,6 +24,141 @@ if(isset($_POST['Submit']))
     $result = mysqli_query($conn, $sql);
 }
 
+if(isset($_POST['pay']))
+{
+    if(isset($_SESSION['loggedinuser']))
+    {
+        $email = $_SESSION['email'];
+        $username = $_SESSION['name'];
+        $accountnum = $_POST['card_num'];
+        $expirymonth = $_POST['card_exp_month'];
+        $expiryYear = $_POST['card_exp_year'];
+        $code = $_POST['CV_code']; 
+        $productTotal = $_SESSION['total'];
+        
+    if(!empty($accountnum) && !empty($expirymonth) && !empty($expiryYear) && !empty($code))   
+    {
+        $ordersql = "INSERT INTO `orderdetails`(`OrderId`, `email`) VALUES ('','".$email."')";
+        mysqli_query($conn,$ordersql);
+
+       $orderselect = "SELECT Max(`OrderId`) AS `OrderId` FROM `orderdetails` Where `email`= '".$email."'";
+       $result = mysqli_query($conn,$orderselect);
+
+       foreach ($result as $value) {
+           $orderid = $value['OrderId'];
+       }
+       $_SESSION['orderid'] = $orderid;
+       
+       $cartdetail = "SELECT * FROM `cartdetail` ";
+       $cartresult = mysqli_query($conn,$cartdetail);
+       
+       foreach ($cartresult as $value) {
+        $cartid = $value['Id'];
+        $productname = $value['name'];
+        $productquentity = $value['quentity'];
+
+        $sqlpurcahse = "INSERT INTO `purchaseitems`(`Id`, `orderId`, `ProductId`, `ProductName`, `ProductQuentity`) VALUES ('','".$orderid."','".$cartid."','".$productname."','".$productquentity."')";
+        mysqli_query($conn,$sqlpurcahse);
+        }
+        $sqlpayment = "INSERT INTO `paymentdeatils`(`Id`, `OrderId`, `Email`, `Name`, `Total`) VALUES ('','".$orderid."','".$email."','".$username."','".$productTotal."')"; 
+        mysqli_query($conn,$sqlpayment);
+        
+        $cartempty = "DELETE FROM `cartdetail`";
+        mysqli_query($conn,$cartempty);
+        $loginpay = true; 
+
+       
+
+            $mail = new PHPMailer();
+            $mail->IsSMTP();
+            $mail->Mailer = "smtp";
+            $mail->SMTPDebug  = 0;  
+            $mail->SMTPAuth   = TRUE;
+            $mail->SMTPSecure = "tls";
+            $mail->Port       = 587;
+            $mail->Host       = "smtp.gmail.com";
+            $mail->Username   = "jewelerywebsite54@gmail.com";
+            $mail->Password   = "vosubboamaaaporo";
+            $mail->IsHTML(true);
+            $mail->AddAddress($email, $username);
+            $mail->SetFrom("jewelerywebsite54@gmail.com", "Jewellery Website");
+            $mail->Subject = "Payment Success";
+            $content = 'Payment Success
+            <b>Your Total is : '.$productTotal.'</b>
+            '; 
+            $mail->MsgHTML($content); 
+            $mail->Send(); 
+
+            header("location: record.php");
+           
+    }
+    }
+    else{
+        $email = $_POST['email'];
+        $_SESSION['guestemail'] = $email;
+        $username = $_POST['name'];
+        $accountnum = $_POST['card_num'];
+        $expirymonth = $_POST['card_exp_month'];
+        $expiryYear = $_POST['card_exp_year'];
+        $code = $_POST['CV_code'];
+        $productTotal = $_SESSION['total'];
+        // $orderid = random_int(100000, 999999);
+    if(!empty($accountnum) && !empty($expirymonth) && !empty($expiryYear) && !empty($code))
+    {
+
+        $ordersql = "INSERT INTO `orderdetails`(`OrderId`, `email`) VALUES ('','".$email."')";
+        mysqli_query($conn,$ordersql);
+
+       $orderselect = "SELECT Max(`OrderId`) AS `OrderId` FROM `orderdetails` Where `email`= '".$email."'";
+       $result = mysqli_query($conn,$orderselect);
+
+       foreach ($result as $value) {
+           $orderid = $value['OrderId'];
+       }
+        
+       $_SESSION['orderid'] = $orderid;
+       $cartdetail = "SELECT * FROM `cartdetail` ";
+       $cartresult = mysqli_query($conn,$cartdetail);
+       
+       foreach ($cartresult as $value) {
+        $cartid = $value['Id'];
+        $productname = $value['name'];
+        $productquentity = $value['quentity'];
+
+        $sqlpurcahse = "INSERT INTO `purchaseitems`(`Id`, `orderId`, `ProductId`, `ProductName`, `ProductQuentity`) VALUES ('','".$orderid."','".$cartid."','".$productname."','".$productquentity."')";
+        mysqli_query($conn,$sqlpurcahse);
+        }
+         $sqlpayment = "INSERT INTO `paymentdeatils`(`Id`, `OrderId`, `Email`, `Name`, `Total`) VALUES ('','".$orderid."','".$email."','".$username."','".$productTotal."')"; 
+        mysqli_query($conn,$sqlpayment);
+    
+        $cartempty = "DELETE FROM `cartdetail`";
+        mysqli_query($conn,$cartempty);
+        $guestpay = true; 
+
+        $mail = new PHPMailer();
+            $mail->IsSMTP();
+            $mail->Mailer = "smtp";
+            $mail->SMTPDebug  = 0;  
+            $mail->SMTPAuth   = TRUE;
+            $mail->SMTPSecure = "tls";
+            $mail->Port       = 587;
+            $mail->Host       = "smtp.gmail.com";
+            $mail->Username   = "jewelerywebsite54@gmail.com";
+            $mail->Password   = "vosubboamaaaporo";
+            $mail->IsHTML(true);
+            $mail->AddAddress($email, $username);
+            $mail->SetFrom("jewelerywebsite54@gmail.com", "Jewellery Website");
+            $mail->Subject = "Payment Success";
+            $content = 'Payment Success
+            <b>Your Total is : '.$productTotal.'</b>
+            '; 
+            $mail->MsgHTML($content); 
+            $mail->Send(); 
+
+            header("location: record.php");
+    }
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -26,7 +171,8 @@ if(isset($_POST['Submit']))
 <body>
 
 <?php
-    session_start();
+    
+   
      if(isset($_SESSION['loggedinuser']) == true)
      {
 
@@ -39,6 +185,21 @@ if(isset($_POST['Submit']))
 
     ?>
 
+<?php
+if(isset($loginpay))
+{
+    echo "<div class='alert alert-success'>
+    <strong>Success</strong> Payment Successfull.!
+</div>";
+}
+else if(isset($guestpay))
+{
+    echo "
+    <div class='alert alert-success'>
+        <strong>Success</strong> Payment Successfull.!
+    </div>";
+}
+?>
 
     <div id="cover" class="container-fluid">
         <div id="divCover" class="container border">
@@ -71,11 +232,6 @@ if(isset($_POST['Submit']))
                             $quentity = $row['quentity'];
                             $total = $price * $quentity;
                            ?>
-
-
-
-           
-
                 <div class="col-md-12 cart-body-1 check-out-body-1">
                     <div class="col-md-3  cart-body-sec1">
                         <img src="<?php echo $image; ?>" alt="" srcset="">
@@ -131,56 +287,44 @@ if(isset($_POST['Submit']))
                 ?>
 
             
-            <!-- <div class="col-md-12 cart-body-1">
-                <div class="col-md-3 cart-body-sec1">
-                    <img src="images/jewellerychain4.png" alt="" srcset="">
-                    <p>Lorem ipsum dolor sit amet.</p>
-                </div>
-                <div class="col-md-3 cart-body-sec2">
-                    <h4>$136.0</h4>
-                </div>
-                <div class="col-md-3 cart-body-sec3">
-                    <div>
-                        <button class="minus"><i class="fa fa-minus" aria-hidden="true"></i></button>
-                        <input type="text" value="1">
-                        <button class="plus"><i class="fa fa-plus" aria-hidden="true"></i></button>
-                    </div>
-                </div>
-                <div class="col-md-2 cart-body-sec4">
-                    <h4>$136.0</h4>
-                    <button><i class="fa fa-times" aria-hidden="true"></i></button>
-                </div>
-            </div> -->
-
-            <!-- <div class="col-md-12 cart-body-1">
-                <div class="col-md-3 cart-body-sec1">
-                    <img src="images/jewellerychain4.png" alt="" srcset="">
-                    <p>Lorem ipsum dolor sit amet.</p>
-                </div>
-                <div class="col-md-3 cart-body-sec2">
-                    <h4>$136.0</h4>
-                </div>
-                <div class="col-md-3 cart-body-sec3">
-                    <div>
-                        <button class="minus"><i class="fa fa-minus" aria-hidden="true"></i></button>
-                        <input type="text" value="1">
-                        <button class="plus"><i class="fa fa-plus" aria-hidden="true"></i></button>
-                    </div>
-                </div>
-                <div class="col-md-2 cart-body-sec4">
-                    <h4>$136.0</h4>
-                    <button><i class="fa fa-times" aria-hidden="true"></i></button>
-                </div>
-            </div> -->
-            <!-- <div class="col-md-12  cart-body-footer">
-                <button class="cart-body-footer-shop">Continue Shopping</button>
-                <button class="cart-body-footer-update"><i class="fa fa-spinner"></i> update Cart</button>
-            </div> -->
-
+            
 
         </div>
     </div>
+    <div id="myModal" class="modal fade" role="dialog">
+   <div  class="modal-dialog ">
 
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Payment Form</h4>
+      </div>
+      <div class="modal-body login">
+      <form action="" method="post">
+      <label  for="" id="info"> Payment Info</label>
+      <input id="email" type="text" name="email" placeholder="Please enter Email">
+      <input id="name" type="text" name="name" placeholder="Please enter Name">
+      <label for="">Card Number</label> 
+      <input type="text" name="card_num" placeholder="Please enter Email">
+      <label for="">Expiry Month</label>
+      <input type="text" name="card_exp_month" placeholder="please enter Card Expiry Month">
+      <label for="">Expiry Year</label>
+      <input type="text" name="card_exp_year" placeholder="please enter Card Expiry Month">
+      <label for="">CV Code</label>
+      <input type="text" name="CV_code" placeholder="please enter CV Code" autocomplete="off">
+      </div>
+      
+      <div class="modal-footer">
+
+        <button type="submit" class="btn-payment-1" name="pay">Payment</button>
+        </form>
+        <button type="button" class="btn-payment" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+
+  </div>
+</div>
 
     <div class="container">
         <div class="row check-out-footer">
@@ -191,31 +335,59 @@ if(isset($_POST['Submit']))
                     ipsam dolores praesentium provident placeat quidem. Velit, veniam.</p>
                 <h5>Have a Coupon Code?</h5>
                 <div>
-                    <input type="text" name="promocode" placeholder="Enter Promo Code Here">
+                    <form action="" method="post">
+                    <input type="text" name="promocode" placeholder="Enter Promo Code Here" autocomplete="off">
                     <button type="submit" name="promo"><i class="fa fa-arrow-right"></i></button>
+                    <button type="button" name="credit" data-toggle="modal" data-target="#myModal" ><i class="fa fa-credit-card"></i></button>
+                    </form>
                 </div>
                
             </div>
 
             <div class="col-md-6 check-out-footer-body-1">
                 <?php
-                     
+               
+                  
+                    if(isset($_POST['promo'])) {
+                        if($_POST['promocode'] == "hello69")
+                        {     
+                         $coupon = 0.30;
+                         $_SESSION['coupon'] = true;
+                        }
+                        else
+                        {
+                            echo "promo didn't Exist";
+                        }
+                    }
+                    
+                    
                      
                        $sql = "SELECT SUM(`price` * `quentity`)  AS `Total` FROM cartdetail";
                        $result = mysqli_query($conn, $sql);
-                       
+                       $total = 0;
                        if (mysqli_num_rows($result) > 0) {
                          // output data of each row
                          while($row = mysqli_fetch_assoc($result)) {
-                            $total = $row['Total'];
+                            if(isset($coupon))
+                            {
+                                $total = $row['Total'] * $coupon;    $_SESSION['total'] = $total;
+                            }
+                            else
+                            {
+                                $total = $row['Total'];
+                                $_SESSION['total'] = $total;
+                            }
+                           
                            ?>
                 <div>
                     <h4>Subtotal</h4>
                     <p>
                         <?php 
                         if($total > 0)
-                        {
+                        { 
+
                             echo "$".$total; 
+                            
                         }
                         else
                         {
@@ -239,7 +411,7 @@ if(isset($_POST['Submit']))
                         <?php
                         if($total > 0)
                         {
-                            echo "$".$total + 2.52; 
+                                echo "$".$total + 2.52; 
                         }
                         else
                         {
@@ -264,11 +436,20 @@ if(isset($_POST['Submit']))
     <script src="js/bootstrap.min.js"></script>
     <script src="index.js"></script>
     <script>
+     <?php 
+     if(isset($_SESSION['loggedinuser']))
+     {
+        ?>
+         document.getElementById("email").setAttribute("type","hidden");
+         document.getElementById("name").setAttribute("type","hidden");
+         document.getElementById("info").style.display = "none";         
 
+        <?php
+     }
+     ?>
         function update(count, id, updateid, updatequentity) {
             let Value = document.getElementById(updatequentity);
-            console.log(Value);
-            console.log(document.getElementById(`value${count}`).value);
+            
             Value.value = document.getElementById(`value${count}`).value;
             //  Value.value = document.getElementById(updatequentity).value;
             let Getid = document.getElementById(updateid);
