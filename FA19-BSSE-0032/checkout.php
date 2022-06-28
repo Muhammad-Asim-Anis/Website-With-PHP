@@ -77,8 +77,8 @@ if(isset($_POST['pay']))
             $mail->SMTPSecure = "tls";
             $mail->Port       = 587;
             $mail->Host       = "smtp.gmail.com";
-            $mail->Username   = "jewelerywebsite54@gmail.com";
-            $mail->Password   = "vosubboamaaaporo";
+            $mail->Username   = "";
+            $mail->Password   = "";
             $mail->IsHTML(true);
             $mail->AddAddress($email, $username);
             $mail->SetFrom("jewelerywebsite54@gmail.com", "Jewellery Website");
@@ -143,8 +143,8 @@ if(isset($_POST['pay']))
             $mail->SMTPSecure = "tls";
             $mail->Port       = 587;
             $mail->Host       = "smtp.gmail.com";
-            $mail->Username   = "jewelerywebsite54@gmail.com";
-            $mail->Password   = "vosubboamaaaporo";
+            $mail->Username   = "";
+            $mail->Password   = "";
             $mail->IsHTML(true);
             $mail->AddAddress($email, $username);
             $mail->SetFrom("jewelerywebsite54@gmail.com", "Jewellery Website");
