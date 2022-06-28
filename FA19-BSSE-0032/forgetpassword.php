@@ -31,8 +31,8 @@ if(isset($_POST['forget']))
             $mail->SMTPSecure = "tls";
             $mail->Port       = 587;
             $mail->Host       = "smtp.gmail.com";
-            $mail->Username   = "jewelerywebsite54@gmail.com";
-            $mail->Password   = "vosubboamaaaporo";
+            $mail->Username   = "";
+            $mail->Password   = "";
             $mail->IsHTML(true);
             $mail->AddAddress($email, $name);
             $mail->SetFrom("jewelerywebsite54@gmail.com", "Jewellery Website");
